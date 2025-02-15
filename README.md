@@ -3,11 +3,23 @@
 ## Can We Force Garbage Collection in Android?
 No, you **cannot force** garbage collection in Android. Calling `System.gc()` or `Runtime.getRuntime().gc()` **only suggests** the system to run GC, but it **may ignore the request** if GC is not needed.
 
-### When Can the System Ignore `System.gc()`?
-The system may **ignore** `System.gc()` when:
-- **There is enough free memory** – GC is not necessary.
-- **GC execution will impact performance** – The system decides that running GC may degrade app performance (e.g., causing UI lag).
-- **The Android Runtime (ART) optimizes GC** – Modern Android versions manage memory more efficiently and prevent unnecessary GC calls.
+### When Does the System Ignore `System.gc()`?
+Even though calling `System.gc()` requests garbage collection, the Android system may ignore it under these conditions:
+
+🔹 **When the System Doesn't Need GC**  
+If there is enough free memory, the system sees no need to reclaim memory and may ignore the request.  
+**Example:** If an app only uses 30MB of available 512MB RAM, the system won't run GC just because `System.gc()` was called.
+
+🔹 **When GC is Not a Priority**  
+Android prioritizes UI rendering and app responsiveness.  
+If your app is in the middle of a UI transition or animation, the system may postpone or skip GC.
+
+🔹 **Dalvik vs. ART Behavior**  
+- On **Dalvik (Android 4.4 and below)**, `System.gc()` was more likely to trigger an actual GC.
+- On **ART (Android 5+)**, GC is optimized, so `System.gc()` is mostly ignored unless memory pressure is high.
+
+🔹 **Background Apps and Low Priority**  
+If your app is running in the background, Android may delay or skip GC since background processes have lower priority.
 
 ## Why Should You Rely on Android’s Automatic Memory Management?
 Android uses **automatic memory management** via the **Garbage Collector (GC)**, which frees memory when needed.
@@ -125,4 +137,3 @@ If your app **allocates 512MB of memory**, the system may **trigger GC aggressiv
 - **Avoid storing large objects in memory** (e.g., 512MB video uploads); stream or store them on disk instead.
 
 Would you like additional code samples for handling large video uploads efficiently? 🚀
-
